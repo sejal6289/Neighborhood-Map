@@ -4,19 +4,35 @@
 	<title>Neighborhood Map</title>
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<script src='js/knockout-3.4.0.js'></script>
+	<script src="js/oauth-1.0a.js"></script>
+	<script src="js/oauth-signature.min.js"></script>
+	 
+	
 	
 </head>
 <body>
-	<h1>Things around Portland</h1>
+	<h1>Things around Portland, Oregon</h1>
 	<hr>
 	<div id = "container">
 	<!-- Search box -->
+
 		<div id="search">
-			<!-- <input id="search-box" type="search" placeholder="Search Location" size="40" data-bind= "textInput: query, valueUpdate: 'afterkeydown', event: { keyup: search }"></input>	 -->
-			<input id="search-box" type="search" placeholder="What're we looing for?" size="40" data-bind= "textInput: query, valueUpdate: 'afterkeydown', event: { keyup: search }"></input>
-			<ul class="location-list" data-bind="foreach: locationList">
-				<li data-bind='text:$data'></li>
-			</ul>
+			
+			<div class="form-ui">
+	        <form data-bind="submit: filterSubmit">
+	          <input data-bind="value: filterWord" placeholder="What're we looing for?" id="filtertext">
+	          <button class="button" type="submit"><span>Filter</span></button>
+	        </form>
+	      	</div>
+	      	<div class="list-ui">
+	        
+	        <ul class="listing" data-bind="foreach: markers, visible: toggleLocationListIsOpenStatus">
+	          <li class="listing-item" data-bind="visible: listVisible, click: $parent.setCurrentRestuarant">
+	            <div data-bind="text: name"></div>
+	          </li>
+	        </ul>
+	      </div>
+			
 		</div>
 	<!-- Google Map -->
 		<div id="map">
@@ -26,10 +42,11 @@
 
 	
 	
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhzx5nCbCDeWpwp_LeM5oZWZLbCj64ihM&callback=initMap" 
-    ></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhzx5nCbCDeWpwp_LeM5oZWZLbCj64ihM&callback=initMap"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
     <script src="js/map.js"></script>
+    
+
     
 </body>
 </html>

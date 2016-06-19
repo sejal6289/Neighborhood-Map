@@ -1,8 +1,109 @@
 	
 	var map;
-	var myLatLng = {lat: 45.5231, lng: -122.6765};
-	var markersArr = [];
-	var defaultDisplay = true;
+	
+	//Location/Places data
+	/*Template 
+	{
+			location :{
+			lat: ,
+			lng: },
+			name: "",
+			category: [""]
+	}
+	*/
+
+	var locationData = [
+		{
+			location:{
+			lat: 45.51908,
+			lng: -122.678652},
+			name: "Pioneer Square courthouse",
+			category: ["things to see","fun",""]
+		},
+		{
+			location:{
+			lat: 45.520675,
+			lng: -122.681730},
+			name: "Nongs Khao Man Gai",
+			category: ["cart","foodcart","food","stands","thai",""]
+		},
+		{
+			location:{
+			lat: 45.525219,
+			lng: -122.716309},
+			name: "Pittock Mansion",
+			category: ["historical",""]
+		},
+		{
+			location:{
+			lat: 45.508554,
+			lng: -122.713122},
+			name: "Oregon Zoo",
+			category: ["kids","zoo",""]	
+		},
+		{
+			location:{
+			lat: 45.519269,
+			lng: -122.677941},
+			name: "Departure Pdx",
+			category: ["Restaurant","asian","food",""] 
+
+		},
+		{
+			location:{
+			lat: 45.587571,
+			lng: -122.742389},
+			name: "Falafel House",
+			category: ["food cart","foodcart","food","cart","gyro","vegetarian","falafel",""]
+		},
+		{
+			location:{
+			lat: 45.514844,
+			lng: -122.673395},
+			name: "Tom McCall Waterfront Park",
+			category: ["park",""] 
+		},
+		{
+			location:{
+			lat: 45.518620,
+			lng: -122.708431},
+			name: "Portland Japanese Garden",
+			category: ["park","Garden",""] 
+		},
+		{
+			location:{
+			lat: 45.522731,
+			lng: -122.607893},
+			name: "A N D Cafe",
+			category: ["food","cafe","cafes" ,"vegetarian","vegan",""]
+		},
+		{
+			location:{
+			lat: 45.522035,
+			lng: -122.681717},
+			name: " Stumptown Coffee Roasters",
+			category: ["coffee","tea","cafe","food",""]
+		},
+		{
+			location:{
+			lat: 45.511934,
+			lng: -122.626527},
+			name: "The waffle Window",
+			category: ["breakfast","brunch","waffle","american","fun","food",""]
+		},
+		{
+			location:{
+			lat: 45.523105,
+			lng: -122.641648},
+			name: "Screen Door",
+			category: ["breakfast","brunch","food","waffle","cajun",""]
+		}
+
+		];
+    
+    
+    var MapViewModel = function() {
+	var self = this;
 
 	// Yelp Constants
 	var yelpKeyData = {
@@ -11,187 +112,158 @@
 		token: '0FK8ZNMjzT-57RuJ9Bev0TsP_cTZjZGZ',
 		tokenSecret: 'EzVYcXIWOsTJCrgcWs7L42AoitQ'
 	};
+
+	//yelpRequest function to access data from yelp api
+
+	self.yelpRequest = function (nameLocation,marker) {
+
+		var nonce_generate = function() {
+			console.log (Math.floor(Math.random() * 1e12).toString());
+			return (Math.floor(Math.random() * 1e12).toString());
+		 };
+		var data;
+		var httpMethod = 'GET',
+		consumerKey = yelpKeyData.consumerKey,
+		consumerKeySecret = yelpKeyData.consumerSecret,
+		url = 'https://api.yelp.com/v2/search?',
+		token = yelpKeyData.token,
+		signatureMethod = 'HMAC-SHA1',
+		version = '1.0',
+		local = 'Portland,Oregon', //#use city, state here
+		tokenSecret = yelpKeyData.tokenSecret
+
+		var parameters = {
+			term: nameLocation,
+			location: local,
+			oauth_consumer_key: consumerKey,
+			oauth_token: token,
+			oauth_nonce: nonce_generate(),
+			oauth_timestamp: Math.floor(Date.now() / 1000),
+			oauth_signature_method: 'HMAC-SHA1',
+			callback: 'cb'
+		};
 	
-	//Location/Places data
-	/*Template 
-	{
-			lat: ,
-			lng: ,
-			title: "",
-			category: [""]
-	}
-	*/
+		var encodedSignature = oauthSignature.generate(httpMethod, url, parameters, consumerKeySecret, tokenSecret);
+		parameters.oauth_signature = encodedSignature;
 
-	var marker = {
-		"places" : [
-		{
-			lat: 45.51908,
-			lng: -122.678652,
-			title: "Pioneer Square courthouse",
-			category: ["things to see","fun",""]
-		},
-		{
-			lat: 45.520675,
-			lng: -122.681730,
-			title: "Nongs Khao Man Gai",
-			category: ["food cart","foodcart","food","food stands","thai",""]
-		},
-		{
-			lat: 45.525219,
-			lng: -122.716309,
-			title: "Pittock Mansion",
-			category: ["things to see","historical",""]
-		},
-		{
-			lat: 45.508554,
-			lng: -122.713122,
-			title: "Oregon Zoo",
-			category: ["things to see","kids","zoo",""]	
-		},
-		{
-			lat: 45.519269,
-			lng: -122.677941,
-			title: "Departure Pdx",
-			category: ["Restaurant","asian","food",""] 
-
-		},
-		{
-			lat: 45.587571,
-			lng: -122.742389,
-			title: "Falafel House",
-			category: ["food cart","foodcart","food","food stands","gyro","vegetarian","falafel",""]
-		},
-		{
-			lat: 45.514844,
-			lng: -122.673395,
-			title: "Tom McCall Waterfront Park",
-			category: ["things to see","park",""] 
-		},
-		{
-			lat: 45.518620,
-			lng: -122.708431,
-			title: "Portland Japanese Garden",
-			category: ["things to see","park","Garden",""] 
-		},
-		{
-			lat: 45.522731,
-			lng: -122.607893,
-			title: "A N D Cafe",
-			category: ["food","cafe","cafes" ,"vegetarian","vegan",""]
-		},
-		{
-			lat: 45.522035,
-			lng: -122.681717,
-			title: " Stumptown Coffee Roasters",
-			category: ["coffee","tea","cafe","food",""]
-		},
-		{
-			lat: 45.511934,
-			lng: -122.626527,
-			title: "The waffle Window",
-			category: ["breakfast","brunch","waffle","american","fun","food",""]
-		},
-		{
-			lat: 45.523105,
-			lng: -122.641648,
-			title: "Screen Door",
-			category: ["breakfast","brunch","food","waffle","cajun",""]
+		var settings = {
+			url: url,
+			data: parameters,
+			cache: true,
+			jsonpCallback: 'cb',
+			dataType: 'jsonp',
+			success: function (result, status, jq) {
+				self.jsonGET(result, marker);
+				console.log(result.businesses[0].id);
+				console.log(result.businesses[0].rating);
+	    	},
+			error: function (jq, status, error) {
+	    		console.log("There is an error getting Yelp information. Will attempt to get Yelp information again.");
+	    		self.jsonGETFailed(marker);
+	    		self.yelpRequest(nameLocation, marker);
+	    	}
+		}
+		
+			$.ajax(settings);
 		}
 
-		]
-
-	};
-    
-    //Init Function to start load the map with initial location
-    var initMap = function() {
-    	//cerate map object
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 45.5231, lng: -122.6765},
-          zoom: 14
-        });
-
-        //loop to create placeMarker objs, push them to markersArr and call setMarkers() for each placeMarker object
-
-        var placeMarker;
-		for (i in marker.places) {
-					
-			placeMarker = new google.maps.Marker({
-		    position: {lat: marker.places[i].lat, lng:marker.places[i].lng},
-		    title:marker.places[i].title
+	//set center of google map
+		
+	self.center = new google.maps.LatLng(45.5231, -122.6765);
+	
+	self.init = function() {
+		var mapData = {
+			zoom: 14,
+			center: self.center,
+		};
+		// Create a new google maps object and attaching it to the DOM with id='map-canvas'
+		self.map = new google.maps.Map(document.getElementById('map'), mapData);
+		
+		self.markers = ko.observableArray([]);
+		// Creates a marker and pushes into self.markers array
+		$.each(locationData, function(key, data) {
+			var marker = new google.maps.Marker({
+				position: new google.maps.LatLng(data.location.lat, data.location.lng),
+				map: self.map,
+				listVisible: ko.observable(true),
+				animation: google.maps.Animation.DROP,
+				name: data.name,
+				category:data.category
+			});
+			// send AJAX request to get data
+			self.yelpRequest(data.name, marker);
+			
+			// Bind a infowindow object and animation for marker
+			var contentString = '<div><h1>'+ data.name + '</h1></div>' 
+			self.infowindow = new google.maps.InfoWindow();
+			google.maps.event.addListener(marker, 'click', function() {
+				self.map.panTo(marker.getPosition());
+				// Make marker icon bounce only once
+				marker.setAnimation(google.maps.Animation.BOUNCE);
+    			setTimeout(function(){ marker.setAnimation(null); }, 750);
+				self.infowindow.setContent(contentString);
+			    self.infowindow.open(self.map, this);
+			});
+			
+			self.markers.push(marker);
 		});
-		
-		markersArr.push(placeMarker);
-    	
-    	//Marks only first 5 places as default from the array
-    	if(defaultDisplay == true && i<5 )
-    	setMarkers(placeMarker);
- 		}
-    }
+		google.maps.event.addListener(self.infowindow,'closeclick', function() {
+			self.resetCenter();
+		});
+	};
+	
+	self.setCurrentRestuarant = function(marker) {
+		google.maps.event.trigger(marker, 'click');
+	};
+	
+	// Once data is successful update
+	self.jsonGET = function(data, markerToUpdate) {
+		var contentString = '<div><h1>'+ markerToUpdate.name + '</h1><p> Phone : ' + data.businesses[0].phone + '</p><p> Rating: ' + data.businesses[0].rating +' | # of Reviews: '+ data.businesses[0].review_count + '</p><img src="'+ data.businesses[0].rating_img_url + '"></img></div>';
+		self.infowindow = new google.maps.InfoWindow();
+		google.maps.event.addListener(markerToUpdate, 'click', function() {
+			self.infowindow.setContent(contentString);
+		    self.infowindow.open(self.map, this);
+		});
+	};
+	
+	// Once data is unsuccessful tell user 
+	self.jsonGETFailed = function(markerToUpdate) {
+		var contentString = '<div><h1>'+ markerToUpdate.name + '</h1><p>' + markerToUpdate.address + '</p><p> Rating: ERROR | # of Reviews: ERROR</p><p>Resending Request</p>></div>';
+		self.infowindow = new google.maps.InfoWindow();
+		google.maps.event.addListener(markerToUpdate, 'click', function() {
+			self.infowindow.setContent(contentString);
+		    self.infowindow.open(self.map, this);
+		});
+	};
+	
+	self.resetCenter = function() {
+		self.map.panTo(self.center);
+	};
+	
+	
+	self.filterWord = ko.observable("");
+	self.filterWordSearch = ko.computed( function() {
+    	return self.filterWord().toLowerCase().split(' ');
+    });
 
-    //Function to set Markers on the map
-	var setMarkers = function(placeMarker) {
+    // Filter
+    
+    self.filterSubmit = function() {
+    	self.filterWordSearch().forEach(function(word) {
+    		self.markers().forEach(function(marker) {
+    			var name = marker.name.toLowerCase();
+    			var category = marker.category;
 
-		placeMarker.setMap(map);
-		
-	}
+    			((name.indexOf(word) === -1) && category.indexOf(word) === -1 ) ? marker.setMap(null) : marker.setMap(self.map);
+    			((name.indexOf(word) === -1) && category.indexOf(word) === -1) ? marker.listVisible(false) : marker.listVisible(true);
+    			
+    		});
+    	});
+    	self.filterWord("");
+    };
+    
+	self.init();
+};
 
-	var removeMarkers = function(){
-		for(i in markersArr) {
-			markersArr[i].setMap(null);
-		}
-	}
-
-	var ViewModel = function() {
-		var self = this;
-
-		self.locationList = ko.observableArray([]);
-		self.query = ko.observable('');
-
-		//Displays the default list view of the markers
-
-			for(places in marker.places)
-			{
-				//Sets only first 5 places as default from the array
-				if(defaultDisplay == true && places<5)
-				self.locationList.push(marker.places[places].title);
-			}
-		
-		//Search function invoked when something is typed in #search-box
-		self.search = function (data,event) {
-			
-			//works only when Enter key is pressed
-			if(event.which == 13)
-			{
-				//empty the locationList array
-				self.locationList.removeAll();
-				removeMarkers(); 
-				//get data from #seach-box
-				self.query($('#search-box').val());
-				
-			
-			//loop to iterate and filter the category user typed
-				for(i in marker.places){
-					
-					for(j in marker.places[i].category)
-					{
-						
-						if (self.query().toLowerCase() == marker.places[i].category[j] ) {
-							
-							//Add the place to locationList observableArray
-							self.locationList.push(marker.places[i].title);
-							//console.log("found " + marker.places[i].category[j]);						
-							console.log(marker.places[i].title);
-							//place the searched on the map
-							setMarkers(markersArr[i]);
-						}
-				
-					}
-				}
-			} //end of if
-		 
-		} //end of search function
-	} //end of View model
-
-	initMap();
-	ko.applyBindings(new ViewModel());
+$(ko.applyBindings(new MapViewModel()));
 
