@@ -2,48 +2,42 @@
 <html>
 <head>
 	<title>Neighborhood Map</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<script src='js/knockout-3.4.0.js'></script>
 	<script src="js/oauth-1.0a.js"></script>
 	<script src="js/oauth-signature.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhzx5nCbCDeWpwp_LeM5oZWZLbCj64ihM&callback=initMap"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
 	 
 	
 	
 </head>
 <body>
-	<h1>Things around Portland, Oregon</h1>
-	<hr>
-	<div id = "container">
-	<!-- Search box -->
+	<header>Things around Portland, Oregon</header>
+	<hr> 
 
-		<div id="search">
-			
-			<div class="form-ui">
-	        <form data-bind="submit: filterSubmit">
-	          <input data-bind="value: filterWord" placeholder="What're we looing for?" id="filtertext">
-	          <button class="button" type="submit"><span>Filter</span></button>
-	        </form>
-	      	</div>
-	      	<div class="list-ui">
-	        
-	        <ul class="listing" data-bind="foreach: markers, visible: toggleLocationListIsOpenStatus">
+	
+	<div class="wrapper">
+      <div id="map"></div>
+      <div class="form-ui">
+        <form data-bind="submit: filterSubmit">
+          <input data-bind="value: filterWord" placeholder="Search here">
+          <button class="button" type="submit"><span>Search</span></button>
+        </form>
+      </div>
+      <div class="list-ui">
+      <button class="button" data-bind="click: toggleLocationListIsOpen, text: toggleLocationListIsOpenButtonText"></button> 
+        <ul class="listing" data-bind="foreach: markers, visible: toggleLocationListIsOpenStatus">
 	          <li class="listing-item" data-bind="visible: listVisible, click: $parent.setCurrentRestuarant">
 	            <div data-bind="text: name"></div>
 	          </li>
 	        </ul>
-	      </div>
-			
-		</div>
-	<!-- Google Map -->
-		<div id="map">
-			
-		</div>
-	</div>
-
+      </div>
+    </div>
+				
 	
-	
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhzx5nCbCDeWpwp_LeM5oZWZLbCj64ihM&callback=initMap"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+    
     <script src="js/map.js"></script>
     
 
