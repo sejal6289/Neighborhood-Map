@@ -101,7 +101,7 @@
 
 		];
     
-    
+
     var MapViewModel = function() {
 	var self = this;
 
@@ -118,7 +118,6 @@
 	self.yelpRequest = function (nameLocation,marker) {
 
 		var nonce_generate = function() {
-			console.log (Math.floor(Math.random() * 1e12).toString());
 			return (Math.floor(Math.random() * 1e12).toString());
 		 };
 		var data;
@@ -150,15 +149,11 @@
 			url: url,
 			data: parameters,
 			cache: true,
-			jsonpCallback: 'cb',
 			dataType: 'jsonp',
 			success: function (result, status, jq) {
-				self.jsonGET(result, marker);
-				console.log(result.businesses[0].id);
-				console.log(result.businesses[0].rating);
+				self.jsonGET(result, marker);				
 	    	},
 			error: function (jq, status, error) {
-	    		console.log("There is an error getting Yelp information. Will attempt to get Yelp information again.");
 	    		self.jsonGETFailed(marker);
 	    		self.yelpRequest(nameLocation, marker);
 	    	}
@@ -239,6 +234,19 @@
 	self.resetCenter = function() {
 		self.map.panTo(self.center);
 	};
+	self.locationListIsOpen = ko.observable(true);
+	
+	self.toggleLocationListIsOpen = function() {
+		self.locationListIsOpen(!self.locationListIsOpen());
+	};
+	
+	self.toggleLocationListIsOpenButtonText = ko.computed( function() {
+    	return self.locationListIsOpen() ? "hide" : "show";
+    });
+    
+    self.toggleLocationListIsOpenStatus = ko.computed( function() {
+    	return self.locationListIsOpen() ? true : false;
+    });
 	
 	
 	self.filterWord = ko.observable("");
@@ -265,5 +273,7 @@
 	self.init();
 };
 
-$(ko.applyBindings(new MapViewModel()));
+var vm = new MapViewModel();
+$(ko.applyBindings(vm));
+/*$(ko.applyBindings(new MapViewModel()));*/
 
