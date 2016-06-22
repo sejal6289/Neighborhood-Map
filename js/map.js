@@ -101,7 +101,7 @@
 
 		];
     
-    
+
     var MapViewModel = function() {
 	var self = this;
 
@@ -273,5 +273,7 @@
 	self.init();
 };
 
-$(ko.applyBindings(new MapViewModel()));
+var vm = new MapViewModel();
+$(ko.applyBindings(vm));
+/*$(ko.applyBindings(new MapViewModel()));*/
 
